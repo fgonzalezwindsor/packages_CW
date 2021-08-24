@@ -162,7 +162,7 @@ public class ImportFileRFUpdate extends SvrProcess
 					                 "      AND r.m_warehouse_id = 1000001  "+
 					                  "     AND r.docstatus IN ('CO', 'CL')  "+
 					                   "    AND r.issotrx = 'Y'))  "+
-		    					" from m_product where m_product_ID="+product_id));
+		    					" from m_product p where p.m_product_ID="+product_id));
 		    			rq.setQtyAvailable(disponible);
 		    			rq.save();
 		    			log.config("disponible:"+disponible);
@@ -701,16 +701,27 @@ public class ImportFileRFUpdate extends SvrProcess
 				log.config("Pedido:"+rq.getQtyEntered());
 				if(rq.getQtyEntered()<=rq.getQtyAvailable())//disponible cuble lo solicitado
 				{
-					int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
+					//int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
     				int um_id  =Integer.parseInt(DB.getSQLValueString(null, "Select coalesce(max(C_uom_ID),100) from m_product where "+
 							" m_product_ID="+rq.getM_Product_ID())); 
 
-    				
-    				sql = new StringBuffer ("Insert into m_requisitionline (m_requisition_ID,m_requisitionline_id, line, m_product_ID, qty, qtyreserved, ad_Client_ID, ad_org_ID,"+
+    				MRequisitionLine mrl = new MRequisitionLine(getCtx() ,0,get_TrxName());
+    				mrl.setM_Requisition_ID(p_requisition_id);
+    				mrl.setM_Product_ID(rq.getM_Product_ID());
+    				BigDecimal qty = new BigDecimal(rq.getQtyEntered());
+    				mrl.setQty(  qty);
+    				mrl.set_CustomColumn("QtyReserved", qty);
+    				//mrl.set_CustomColumn("QtyReserved", rq.getQtyEntered());
+    				mrl.set_CustomColumn("QtyUsed", new BigDecimal(0));
+    				mrl.setLine(10);
+    				mrl.set_CustomColumn("Bloquear", rs.getString("bloquear"));
+    				mrl.setC_UOM_ID(um_id );
+    				mrl.save();
+    			/*	String sql2 = ("Insert into m_requisitionline (m_requisition_ID,m_requisitionline_id, line, m_product_ID, qty, qtyreserved, ad_Client_ID, ad_org_ID,"+
     				" created, createdby, isactive, updated, updatedby,QTYUSED, Bloquear,C_UOM_ID)values("+p_requisition_id+","+rl_id+",10,"+rq.getM_Product_ID()+","+rq.getQtyEntered()+","+rq.getQtyEntered()+",1000000,1000000,"+rq.getCreated()+",100,'Y', "+rq.getCreated()+", 100,0,'"+rs.getString("bloquear")+"',"+um_id+")");
-					no = DB.executeUpdate(sql.toString(), get_TrxName());
+					no = DB.executeUpdate(sql2, get_TrxName());*/
 				//	commitEx();
-					log.config("Actualizada:"+no);
+					log.config("Actualizado");
     		
     				rq.setProcessed(true);
     				rq.set_ValueOfColumn("Msg", "Producto agregado con la cantidad:"+rq.getQtyEntered());
@@ -718,16 +729,27 @@ public class ImportFileRFUpdate extends SvrProcess
 				}//end disponible cuble lo solicitado
 				else //disponible no cuble lo solicitad
 				{
-					int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
+					//int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
     				int um_id  =Integer.parseInt(DB.getSQLValueString(null, "Select coalesce(max(C_uom_ID),100) from m_product where "+
 							" m_product_ID="+rq.getM_Product_ID())); 
-
+    				MRequisitionLine mrl = new MRequisitionLine(getCtx() ,0,get_TrxName());
+    				mrl.setM_Requisition_ID(p_requisition_id);
+    				mrl.setM_Product_ID(rq.getM_Product_ID());
+    				BigDecimal qty = new BigDecimal(rq.getQtyAvailable());
+    				mrl.setQty(  qty);
+    				mrl.set_CustomColumn("QtyReserved", qty);
+    				//mrl.set_CustomColumn("QtyReserved", rq.getQtyEntered());
+    				mrl.set_CustomColumn("QtyUsed", new BigDecimal(0));
+    				mrl.setLine(10);
+    				mrl.set_CustomColumn("Bloquear", rs.getString("bloquear"));
+    				mrl.setC_UOM_ID(um_id );
+    				mrl.save();
     				
-    				sql = new StringBuffer ("Insert into m_requisitionline (m_requisition_ID,m_requisitionline_id, line, m_product_ID, qty, qtyreserved, ad_Client_ID, ad_org_ID,"+
+    			/*	sql = new StringBuffer ("Insert into m_requisitionline (m_requisition_ID,m_requisitionline_id, line, m_product_ID, qty, qtyreserved, ad_Client_ID, ad_org_ID,"+
     				" created, createdby, isactive, updated, updatedby,QTYUSED, Bloquear,C_UOM_ID)values("+p_requisition_id+","+rl_id+",10,"+rq.getM_Product_ID()+","+rq.getQtyAvailable()+","+rq.getQtyAvailable()+",1000000,1000000,"+rq.getCreated()+",100,'Y', "+rq.getCreated()+", 100,0,'"+rs.getString("bloquear")+"',"+um_id+")");
-					no = DB.executeUpdate(sql.toString(), get_TrxName());
+					no = DB.executeUpdate(sql.toString(), get_TrxName());*/
 				//	commitEx();
-					log.config("Actualizada:"+no);
+					log.config("Actualizada:");
     		
     				rq.setProcessed(true);
     				rq.set_ValueOfColumn("Msg", "Producto agregado con el disponible restante:"+rq.getQtyAvailable());

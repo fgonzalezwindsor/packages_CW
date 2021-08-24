@@ -20,8 +20,7 @@ package org.windsor.process;
 
 //import java.util.Properties;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Vector;
+
 import java.util.logging.*;
 
 //import org.compiere.model.MOrder;
@@ -34,14 +33,11 @@ import org.compiere.util.AdempiereSystemError;
 
 
 import com.jcraft.jsch.*;
-import com.jcraft.jsch.ChannelSftp.LsEntry;
+
 
 //import java.awt.*;
 //import javax.swing.*;
-import java.io.*;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
 
 
 //import org.compiere.util.Env;
@@ -58,7 +54,7 @@ public class SshUpload extends SvrProcess
 
 
 	      
-	private int p_order = 0;
+	//private int p_order = 0;
 	/**
 	 *  Prepare - e.g., get Parameters.
 	 */
@@ -71,8 +67,7 @@ public class SshUpload extends SvrProcess
 			if (para[i].getParameter() == null)
 				;
 			else if (name.equals("C_Order_ID"))
-				p_order=para[i].getParameterAsInt();
-				
+		;//		
 			else
 				log.log(Level.SEVERE, "prepare - Unknown Parameter: " + name);
 		}
@@ -96,7 +91,7 @@ public class SshUpload extends SvrProcess
 		Channel channel=null;
 		
 		 ChannelSftp channelSftp=null;
-		 Boolean conexion=false;
+		// Boolean conexion=false;
 				 String home="";
 		try {
 		  JSch jsch = new JSch();
@@ -126,7 +121,7 @@ public class SshUpload extends SvrProcess
 		  
 		  boolean flag = true;
           try{
-        	 conexion=channelSftp.isConnected();
+        	// conexion=channelSftp.isConnected();
         	 home=channelSftp.getHome();
               channelSftp.cd("Documentos/");
         //      home=channelSftp.getHome(); 

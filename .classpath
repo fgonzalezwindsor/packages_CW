@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/adempiere_360"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OFB_360"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="D:/Aplicaciones/Desarrollo/Dropbox/private/javax.mail-1.6.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
