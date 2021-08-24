@@ -22,8 +22,19 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 //import java.math.BigDecimal;
 import java.util.logging.Level;
+
+
+
+
+
+
 
 
 
@@ -701,10 +712,11 @@ public class ImportFileRFUpdate extends SvrProcess
 				log.config("Pedido:"+rq.getQtyEntered());
 				if(rq.getQtyEntered()<=rq.getQtyAvailable())//disponible cuble lo solicitado
 				{
-					//int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
+				//	int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
     				int um_id  =Integer.parseInt(DB.getSQLValueString(null, "Select coalesce(max(C_uom_ID),100) from m_product where "+
 							" m_product_ID="+rq.getM_Product_ID())); 
 
+    				//log.info("ID:"+rl_id);
     				MRequisitionLine mrl = new MRequisitionLine(getCtx() ,0,get_TrxName());
     				mrl.setM_Requisition_ID(p_requisition_id);
     				mrl.setM_Product_ID(rq.getM_Product_ID());
@@ -716,10 +728,36 @@ public class ImportFileRFUpdate extends SvrProcess
     				mrl.setLine(10);
     				mrl.set_CustomColumn("Bloquear", rs.getString("bloquear"));
     				mrl.setC_UOM_ID(um_id );
+    				
     				mrl.save();
-    			/*	String sql2 = ("Insert into m_requisitionline (m_requisition_ID,m_requisitionline_id, line, m_product_ID, qty, qtyreserved, ad_Client_ID, ad_org_ID,"+
-    				" created, createdby, isactive, updated, updatedby,QTYUSED, Bloquear,C_UOM_ID)values("+p_requisition_id+","+rl_id+",10,"+rq.getM_Product_ID()+","+rq.getQtyEntered()+","+rq.getQtyEntered()+",1000000,1000000,"+rq.getCreated()+",100,'Y', "+rq.getCreated()+", 100,0,'"+rs.getString("bloquear")+"',"+um_id+")");
-					no = DB.executeUpdate(sql2, get_TrxName());*/
+    			/*	Timestamp timeStampDate=null;
+    				try {
+    				      DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    				      Date date = dateFormat.parse("24/08/2021");
+    				      timeStampDate = new Timestamp(date.getTime());
+    				      System.out.println(timeStampDate);
+    				    } catch (ParseException e) {
+    				      System.out.println(e);
+    				    }
+    				String sql2 = "Insert into m_requisitionline (m_requisition_ID,m_requisitionline_id, "+
+    				"line, m_product_ID, qty, qtyreserved, ad_Client_ID, ad_org_ID,"+
+    				" created, createdby, isactive, updated, updatedby,QTYUSED, Bloquear,C_UOM_ID)values("+p_requisition_id+","+rl_id+
+    				",10,"+rq.getM_Product_ID()+","+rq.getQtyEntered()+","+rq.getQtyEntered()+",1000000,1000000,"
+    				+timeStampDate+",100,'Y',"+ timeStampDate+", 100,0,'"+rs.getString("bloquear")+"',"+um_id+")";
+					log.info(sql2);*/
+				
+				//	PreparedStatement pstmtc = DB.prepareStatement (sql2, get_TrxName());
+				////	pstmtc.setString(2, "2");
+				//	pstmtc.setString(3, "3");
+				//	pstmtc.setString(4, "4");
+				//	pstmtc.setString(5, "1");
+				//	pstmtc.setString(6, "2");
+				//	pstmtc.setString(7, "3");
+				//	pstmtc.setString(8, "4");
+				//	ResultSet rsc = pstmtc.executeQuery ();
+					
+					
+				//	no = DB.executeUpdate(sql2, get_TrxName());
 				//	commitEx();
 					log.config("Actualizado");
     		
@@ -729,10 +767,10 @@ public class ImportFileRFUpdate extends SvrProcess
 				}//end disponible cuble lo solicitado
 				else //disponible no cuble lo solicitad
 				{
-					//int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
+				//	int rl_id = Integer.parseInt(DB.getSQLValueString(null, "Select NEXTIDFUNC(      920,'N') from c_charge where c_charge_ID=1000010")); 
     				int um_id  =Integer.parseInt(DB.getSQLValueString(null, "Select coalesce(max(C_uom_ID),100) from m_product where "+
 							" m_product_ID="+rq.getM_Product_ID())); 
-    				MRequisitionLine mrl = new MRequisitionLine(getCtx() ,0,get_TrxName());
+    		MRequisitionLine mrl = new MRequisitionLine(getCtx() ,0,get_TrxName());
     				mrl.setM_Requisition_ID(p_requisition_id);
     				mrl.setM_Product_ID(rq.getM_Product_ID());
     				BigDecimal qty = new BigDecimal(rq.getQtyAvailable());
