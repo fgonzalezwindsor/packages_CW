@@ -511,6 +511,8 @@ public class ImportFileRFUpdate extends SvrProcess
 					}//End Caso disponible negativo cubre solicitado
 					
 				}//End Caso solicitado Negativo
+				int suma=rq.getQtyEntered() + rq.getQtyAvailable();
+				log.info("Suma"+suma);
 				if(rq.getQtyEntered()>=0) //Caso Solicitado Positivo
 				{
 					
@@ -571,7 +573,48 @@ public class ImportFileRFUpdate extends SvrProcess
 						rq.save();
 					}//End Nueva Reserva deja en negativo?
 				}//End Caso Solicitado Positivo
-				
+				else
+				{
+					log.info("Else recien creado");
+					int reserva= rq.get_ValueAsInt("QtyReserved");
+					log.config("Usado Real:" + rs.getInt("QtyOrdered"));
+					log.config("Disponible Negativo y Pedido Positivo:"+rq.getQtyEntered());
+					log.config("Reserva:"+rq.get_ValueAsInt("QtyReserved"));
+					if(reserva>0)
+					{
+						int pedido= rq.getQtyEntered() ;
+						if(reserva>pedido)
+							if(pedido<0)
+								reserva=reserva+ pedido;
+						
+						else
+							reserva=0;
+					}
+					else
+						reserva=0;
+					
+					int disponible= rq.getQtyAvailable();
+					if(reserva+disponible>0)
+					{
+						reserva=reserva+disponible;
+					}
+					else
+						reserva=0;
+					int qtyint=reserva + rs.getInt("QtyOrdered");
+					BigDecimal qty = new BigDecimal (qtyint) ;
+					rl.setQty(qty);
+					rl.set_ValueOfColumn("QtyUsed",new BigDecimal(rs.getInt("QtyOrdered")));
+					rl.set_ValueOfColumn("QtyReserved",new BigDecimal( reserva));
+					rl.set_ValueOfColumn("Bloquear", rs.getString("bloquear"));
+					rl.save();
+					rq.set_ValueOfColumn("Msg", "Se Ajusta Reserva");
+					
+					rq.setProcessed(true);
+					rq.save();
+					
+					
+					
+				}
 			}//End Caso Disponible Negativo
 			else //Disponible Positivo
 			{
